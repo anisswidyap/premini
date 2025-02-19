@@ -47,3 +47,4 @@ Route::apiResource('jurusan', ApiJurusan::class);
 Route::apiResource('siswa', ApiMahasiswa::class);
 Route::apiResource('mahasiswamatkul', ApiMahasiswaMatkul::class);
 Route::apiResource('matkul', ApiMatkul::class);
+// test push
