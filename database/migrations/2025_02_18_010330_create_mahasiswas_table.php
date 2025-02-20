@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('jenis_kelamin');
             $table->string('nim');
-            $table->string('foto');
+            $table->string('foto')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

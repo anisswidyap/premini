@@ -30,7 +30,7 @@ class ApiJurusan extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string',
+            'jurusan' => 'required|string',
             'fakultas_id' => 'required|exists:fakultas,id',
         ]);
 
@@ -67,7 +67,7 @@ class ApiJurusan extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama' => 'required|string',
+            'jurusan' => 'required|string',
             'fakultas_id' => 'required|exists:fakultas,id',
         ]);
 

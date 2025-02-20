@@ -30,21 +30,26 @@ class ApiDosen extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'nama' => 'required|string',
-            'jenis_kelamin' => 'required|string',
-            'nim' => 'required|unique:mahasiswas,nim',
-            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-        ]);
+{
+    $validatedData = $request->validate([
+        'nama' => 'required|string',
+        'jenis_kelamin' => 'required|string',
+        'nim' => 'required|unique:mahasiswas,nim',
+        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+    ]);
 
-        if ($request->hasFile('foto')) {
-            $validatedData['foto'] = $request->file('foto')->store('foto_dosen', 'public');
-        }
-
-        Dosen::create($validatedData);
-        return response()->json('Dosen berhasil ditambahkan', 200);
+    if ($request->hasFile('foto')) {
+        $file = $request->file('foto');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('uploads', $filename, 'public');
+        $validatedData['foto'] = 'storage/' . $filePath; // Simpan path yang benar
     }
+
+    $mahasiswa = Mahasiswa::create($validatedData);
+
+    return response()->json(['message' => 'Mahasiswa berhasil ditambahkan', 'data' => $mahasiswa], 201);
+}
+
 
     /**
      * Display the specified resource.

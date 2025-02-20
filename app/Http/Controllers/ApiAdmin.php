@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ApiAdmin extends Controller
@@ -12,7 +12,7 @@ class ApiAdmin extends Controller
      */
     public function index()
     {
-        $data = Admin::all();
+        $data = User::all();
         return response()->json($data);
     }
 
@@ -29,7 +29,7 @@ class ApiAdmin extends Controller
      */
     public function store(Request $request)
     {
-        Admin::create($request->all());
+        User::create($request->all());
         return response()->json('Admin berhasil ditambahkan', 200);
     }
 
@@ -54,9 +54,9 @@ class ApiAdmin extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $dosen = Admin::find($id);
-        $dosen->update($request->all());
-        return response()->json('Dosen berhasil diedit', 200);
+        $user = User::find($id);
+        $user->update($request->all());
+        return response()->json('Admin berhasil diedit', 200);
     }
 
     /**
@@ -64,8 +64,8 @@ class ApiAdmin extends Controller
      */
     public function destroy(string $id)
     {
-        $admin = Admin::find($id);
-        $admin->delete();
-        return response()->json('Dosen berhasil dihapus', 200);
+        $user = User::find($id);
+        $user->delete();
+        return response()->json('Admin berhasil dihapus', 200);
     }
 }

@@ -16,12 +16,18 @@ class Jurusan extends Model
     ];
 
     protected $fillable = [
+        'jurusan',
         'fakultas_id'
     ];
 
-    public function MataKuliah(): HasMany
+    public function Matkul(): HasMany
     {
-        return $this->hasMany(MataKuliah::class);
+        return $this->hasMany(Matkul::class);
+    }
+
+    public function fakultas(): BelongsTo
+    {
+        return $this->belongsTo(Fakultas::class);
     }
 
     public function DosenMatkul(): HasMany

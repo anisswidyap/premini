@@ -38,10 +38,18 @@ class ApiMahasiswa extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            $validatedData['foto'] = $request->file('foto')->store('foto_mahasiswa', 'public');
+        $file = $request->file('foto');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('uploads', $filename, 'public');
         }
 
-        Mahasiswa::create($validatedData);
+        $mahasiswa = Mahasiswa::create([
+            'nama' => $request->nama,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'nim' => $request->nim,
+            'foto' => $filePath ?? null,
+        ]);
+
         return response()->json('Mahasiswa berhasil ditambahkan', 200);
     }
 
@@ -64,27 +72,33 @@ class ApiMahasiswa extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $mahasiswa = Mahasiswa::findOrFail($id);
+    public function update(Request $request, $id)
+{
+    $mahasiswa = Mahasiswa::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'nama' => 'required|string',
-            'jenis_kelamin' => 'required|string',
-            'nim' => 'required|unique:mahasiswas,nim,'.$id,
-            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-        ]);
+    $validatedData = $request->validate([
+        'nama' => 'required|string',
+        'jenis_kelamin' => 'required|string',
+        'nim' => 'required|unique:mahasiswas,nim,' . $id,
+        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+    ]);
 
-        if ($request->hasFile('foto')) {
-            if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
-                Storage::disk('public')->delete($mahasiswa->foto);
-            }
-            $validatedData['foto'] = $request->file('foto')->store('foto_mahasiswa', 'public');
+    if ($request->hasFile('foto')) {
+        if ($mahasiswa->foto) {
+            Storage::disk('public')->delete($mahasiswa->foto);
         }
 
-        $mahasiswa->update($validatedData);
-        return response()->json('Mahasiswa berhasil diperbarui', 200);
+        $file = $request->file('foto');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('uploads', $filename, 'public');
+        $validatedData['foto'] = $filePath;
     }
+
+    $mahasiswa->update($validatedData);
+
+    return response()->json('Mahasiswa berhasil diperbarui', 200);
+}
+
 
     /**
      * Remove the specified resource from storage.
