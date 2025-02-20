@@ -7,7 +7,6 @@ use App\Http\Controllers\ApiFakultas;
 use App\Http\Controllers\ApiJurusan;
 use App\Http\Controllers\ApiMahasiswa;
 use App\Http\Controllers\ApiMahasiswaMatkul;
-use App\Http\Controllers\ApiMataKuliah;
 use App\Http\Controllers\ApiMatkul;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Http\Request;

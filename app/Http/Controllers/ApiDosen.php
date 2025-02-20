@@ -42,12 +42,16 @@ class ApiDosen extends Controller
         $file = $request->file('foto');
         $filename = time() . '_' . $file->getClientOriginalName();
         $filePath = $file->storeAs('uploads', $filename, 'public');
-        $validatedData['foto'] = 'storage/' . $filePath; // Simpan path yang benar
-    }
+        }
 
-    $mahasiswa = Mahasiswa::create($validatedData);
+    $dosen = Dosen::create([
+        'nama' => $request->nama,
+        'jenis_kelamin' => $request->jenis_kelamin,
+        'nim' => $request->nim,
+        'foto' => $filePath ?? null,
+    ]);
 
-    return response()->json(['message' => 'Mahasiswa berhasil ditambahkan', 'data' => $mahasiswa], 201);
+    return response()->json('Dosen berhasil ditambahkan', 200);
 }
 
 
@@ -85,11 +89,17 @@ class ApiDosen extends Controller
             if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
                 Storage::disk('public')->delete($dosen->foto);
             }
-            $validatedData['foto'] = $request->file('foto')->store('foto_dosen', 'public');
+            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+            $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
+            $validatedData['foto'] = $filePath;
         }
 
-        $dosen->update($validatedData);
-        return response()->json('Dosen berhasil diperbarui', 200);
+        $dosen->fill($validatedData)->save();
+
+        return response()->json([
+            'message' => 'Dosen berhasil diperbarui',
+            'data' => $dosen->refresh()
+        ], 200);
     }
 
     /**

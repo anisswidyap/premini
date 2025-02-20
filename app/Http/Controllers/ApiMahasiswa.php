@@ -77,28 +77,28 @@ class ApiMahasiswa extends Controller
     $mahasiswa = Mahasiswa::findOrFail($id);
 
     $validatedData = $request->validate([
-        'nama' => 'required|string',
-        'jenis_kelamin' => 'required|string',
-        'nim' => 'required|unique:mahasiswas,nim,' . $id,
+        'nama' => 'sometimes|required|string',
+        'jenis_kelamin' => 'sometimes|required|string',
+        'nim' => 'sometimes|required|unique:mahasiswas,nim,',
         'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
     ]);
 
     if ($request->hasFile('foto')) {
-        if ($mahasiswa->foto) {
+        if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
             Storage::disk('public')->delete($mahasiswa->foto);
         }
-
-        $file = $request->file('foto');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('uploads', $filename, 'public');
+        $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+        $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
         $validatedData['foto'] = $filePath;
     }
 
-    $mahasiswa->update($validatedData);
+    $mahasiswa->fill($validatedData)->save();
 
-    return response()->json('Mahasiswa berhasil diperbarui', 200);
+    return response()->json([
+        'message' => 'Mahasiswa berhasil diperbarui',
+        'data' => $mahasiswa->refresh()
+    ], 200);
 }
-
 
     /**
      * Remove the specified resource from storage.
