@@ -13,46 +13,42 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
+
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request)
-    {
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
-        }
 
-        $user = Auth::user();
-        $token = auth()->user()->createToken('auth_token')->plainTextToken;
+    public function store(LoginRequest $request): JsonResponse
+{
+    $request->authenticate();
 
-        return response()->json([
-            'message' => 'Login berhasil',
-            'token' => $token,
-            'user' => $user
-        ]);
-    }
+    $user = Auth::user();
+
+    // Buat token untuk user yang login
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login berhasil',
+        'token' => $token,
+        'user' => $user
+    ]);
+}
 
 
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): JsonResponse
+public function destroy(Request $request): JsonResponse
 {
     $user = $request->user();
 
     if ($user) {
-        $user->tokens()->delete(); // Hapus semua token user
+        // Hapus token yang sedang digunakan
+        $request->user()->currentAccessToken()->delete();
     }
 
     return response()->json(['message' => 'Logout berhasil'], 200);
 }
+
+
 
 }

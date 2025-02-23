@@ -28,10 +28,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-});
+
+Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
+Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+
+
 
 Route::apiResource('admin', ApiAdmin::class);
 Route::apiResource('dosen', ApiDosen::class);
