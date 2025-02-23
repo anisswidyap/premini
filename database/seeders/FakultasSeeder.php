@@ -13,7 +13,12 @@ class FakultasSeeder extends Seeder
      */
     public function run(): void
     {
-        // Fakultas::create([
+        Fakultas::create([
+            'id' => 1,
+            'nama_fakultas' => 'teknik',
+        ]);
+
+        // Fakultas::factory()->create([
         //     'id' => 1,
         //     'nama_fakultas' => 'teknik',
         // ]);

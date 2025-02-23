@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jurusan;
+use App\Models\Matkul;
 use Illuminate\Http\Request;
 
 class ApiJurusan extends Controller
@@ -10,11 +11,18 @@ class ApiJurusan extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Jurusan::with('fakultas')->get();
+        $query = Jurusan::with('fakultas');
+
+        if ($request->has('search')) {
+            $query->where('jurusan', 'like', '%' . $request->search . '%');
+        }
+
+        $data = $query->get();
         return response()->json($data);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -35,9 +43,9 @@ class ApiJurusan extends Controller
         ]);
 
         Jurusan::create($request->all());
-
         return response()->json('Jurusan berhasil ditambahkan', 200);
     }
+
 
     /**
      * Display the specified resource.
@@ -86,9 +94,13 @@ class ApiJurusan extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        $jurusan = Jurusan::find($id);
-        $jurusan->delete();
-        return response()->json('Jurusan berhasil dihapus', 200);
+{
+    $jurusan = jurusan::find($id);
+    if (!$jurusan) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
     }
+    $jurusan->delete();
+    return response()->json('jurusan berhasil dihapus', 200);
+}
+
 }

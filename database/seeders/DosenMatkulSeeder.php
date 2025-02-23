@@ -2,24 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Models\Dosen;
+use App\Models\DosenMatkul;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DosenSeeder extends Seeder
+class DosenMatkulSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Dosen::create([
+        DosenMatkul::create([
             'id' => 1,
-            'nama' => 'pak agus',
-            'jurusan_id' => 1,
-            'jenis_kelamin' => 'laki-laki',
-            'nidn' => '826498234',
-            'foto' => 'agus.jpg',
+            'dosen_id' => 1,
+            'matkul_id' => 1,
         ]);
     }
 }

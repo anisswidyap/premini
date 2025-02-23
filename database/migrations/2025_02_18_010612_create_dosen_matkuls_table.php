@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('dosen_matkuls', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('dosen_id')->constrained('dosens')->onDelete('cascade');
-            $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
-            $table->foreignId('matkul_id')->constrained('matkuls')->onDelete('cascade');
+            $table->foreignId('dosen_id')->constrained('dosens')->onDelete('restrict');
+            $table->foreignId('matkul_id')->constrained('matkuls')->onDelete('restrict');
             $table->timestamps();
         });
     }

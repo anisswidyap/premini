@@ -8,87 +8,76 @@ use Illuminate\Http\Request;
 class ApiDosenMatkul extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan semua data DosenMatkul.
      */
     public function index()
     {
-        $data = DosenMatkul::with('dosen', 'jurusan', 'matkul');
+        $data = DosenMatkul::with(['dosen', 'matkul'])->get();
         return response()->json($data);
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Menyimpan data baru ke database.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'dosen_id' => 'required|exists::dosen,id',
-            'jurusan_id' => 'required|exists::jurusan,id',
-            'matkul_id' => 'required|exists::matkul,id',
+            'dosen_id' => 'required|exists:dosens,id',
+            'matkul_id' => 'required|exists:matkuls,id',
         ]);
+
         DosenMatkul::create($request->all());
-        return response()->json('Mahasiswa Matkul berhasil ditambahkan', 200);
+        return response()->json(['message' => 'Dosen Matkul berhasil ditambahkan'], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan data berdasarkan ID.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $dosenmatkul = DosenMatkul::with('dosen, jurusan, matkul')->find($id);
+        $dosenMatkul = DosenMatkul::with(['dosen','matkul'])->find($id);
 
-        if (!$dosenmatkul) {
-            return response()->json(['message' => 'data tidak di temukan'], 404);
+        if (!$dosenMatkul) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        return response()->json($dosenmatkul);
+        return response()->json($dosenMatkul);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Mengupdate data berdasarkan ID.
      */
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'dosen_id' => 'required|exists::dosen,id',
-            'jurusan_id' => 'required|exists::jurusan,id',
-            'matkul_id' => 'required|exists::matkul,id',
+            'dosen_id' => 'required|exists:dosens,id',
+            'matkul_id' => 'required|exists:matkuls,id',
         ]);
 
-        $dosenmatkul = DosenMatkul::find($id);
+        $dosenMatkul= DosenMatkul::find($id);
 
-        if (!$dosenmatkul) {
-            return response()->json(['message' => 'data tidak ditemukan'], 404);
+        if (!$dosenMatkul) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        $dosenmatkul->update($request->all());
+        $dosenMatkul->update($request->all());
 
-        return response()->json('Dosen Matkul berhasil diedit', 200);
+        return response()->json(['message' => 'Dosen matkul berhasil diperbarui'], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus data berdasarkan ID.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $dosenmatkul = DosenMatkul::find($id);
-        $dosenmatkul->delete();
-        return response()->json('Dosen Matkul berhasil dihapus', 200);
+        $dosenMatkul = DosenMatkul::find($id);
+
+        if (!$dosenMatkul) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $dosenMatkul->delete();
+
+        return response()->json(['message' => 'Dosen Matkul berhasil dihapus'], 200);
     }
 }

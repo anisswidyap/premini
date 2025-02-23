@@ -19,9 +19,8 @@ class Fakultas extends Model
         'nama_fakultas',
     ];
 
-
-    public function Jurusan(): HasOne
+    public function Jurusan(): HasMany
     {
-        return $this->hasOne(Jurusan::class);
+        return $this->HasMany(Jurusan::class);
     }
 }

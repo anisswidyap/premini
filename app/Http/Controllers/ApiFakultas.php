@@ -10,11 +10,18 @@ class ApiFakultas extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $data = Fakultas::all();
-        return response()->json($data);
+    public function index(Request $request)
+{
+    $query = Fakultas::query();
+
+    if ($request->has('search')) {
+        $query->where('nama_fakultas', 'like', '%' . $request->search . '%');
     }
+
+    $data = $query->get();
+    return response()->json($data);
+}
+
 
     /**
      * Show the form for creating a new resource.

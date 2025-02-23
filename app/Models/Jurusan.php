@@ -20,6 +20,18 @@ class Jurusan extends Model
         'fakultas_id'
     ];
 
+    public $table = 'jurusans';
+
+    public function Mahasiswa()
+    {
+        return $this->hasMany(Mahasiswa::class);
+    }
+
+    public function Dosen()
+    {
+        return $this->hasMany(Dosen::class);
+    }
+
     public function Matkul(): HasMany
     {
         return $this->hasMany(Matkul::class);
@@ -29,11 +41,5 @@ class Jurusan extends Model
     {
         return $this->belongsTo(Fakultas::class);
     }
-
-    public function DosenMatkul(): HasMany
-    {
-        return $this->hasMany(DosenMatkul::class);
-    }
-
 
 }

@@ -17,7 +17,6 @@ class DosenMatkul extends Model
 
     protected $fillable = [
         'dosen_id',
-        'jurusan_id',
         'matkul_id'
     ];
 
@@ -26,14 +25,10 @@ class DosenMatkul extends Model
         return $this->belongsTo(Dosen::class);
     }
 
-
-    public function matkul(): BelongsTo
+    public function Matkul(): BelongsTo
     {
         return $this->belongsTo(matkul::class);
     }
 
-    public function Jurusan(): BelongsTo
-    {
-        return $this->belongsTo(Jurusan::class);
-    }
 }
+

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dosen;
-use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,74 +13,52 @@ class ApiDosen extends Controller
      */
     public function index()
     {
-        $data = Dosen::all();
+        $data = Dosen::with(['jurusan'])->get();
         return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $validatedData = $request->validate([
-        'nama' => 'required|string',
-        'jenis_kelamin' => 'required|string',
-        'nim' => 'required|unique:mahasiswas,nim',
-        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-    ]);
+    {
+        $validatedData = $request->validate([
+            'nama' => 'required|string',
+            'jurusan_id' => 'required|exists:jurusans,id',
+            'jenis_kelamin' => 'required|string',
+            'nidn' => 'required|unique:dosens,nidn',
+            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
 
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('uploads', $filename, 'public');
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads', $filename, 'public');
         }
 
-    $dosen = Dosen::create([
-        'nama' => $request->nama,
-        'jenis_kelamin' => $request->jenis_kelamin,
-        'nim' => $request->nim,
-        'foto' => $filePath ?? null,
-    ]);
+        $dosen = Dosen::create([
+            'nama' => $request->nama,
+            'jurusan_id' => $request->jurusan_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'nidn' => $request->nidn,
+            'foto' => $filePath ?? null,
+        ]);
 
-    return response()->json('Dosen berhasil ditambahkan', 200);
-}
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return response()->json('Dosen berhasil ditambahkan', 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $dosen = Dosen::findOrFail($id);
 
         $validatedData = $request->validate([
-            'nama' => 'required|string',
-            'jenis_kelamin' => 'required|string',
-            'nim' => 'required|unique:mahasiswas,nim,'.$id,
+            'nama' => 'sometimes|required|string',
+            'jurusan_id' => 'required|exists:jurusans,id',
+            'jenis_kelamin' => 'sometimes|required|string',
+            'nidn' => 'sometimes|required|unique:dosens,nidn,' . $id,
             'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
@@ -109,17 +86,16 @@ class ApiDosen extends Controller
     {
         $dosen = Dosen::find($id);
 
-    if (!$dosen) {
-        return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
-    }
+        if (!$dosen) {
+            return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
+        }
 
-    if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
-        Storage::disk('public')->delete($dosen->foto);
-    }
+        if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
+            Storage::disk('public')->delete($dosen->foto);
+        }
 
-    $dosen->delete();
+        $dosen->delete();
 
-    return response()->json('Dosen berhasil dihapus', 200);
-
+        return response()->json('Dosen berhasil dihapus', 200);
     }
 }

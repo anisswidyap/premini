@@ -10,11 +10,18 @@ class ApiMatkul extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Matkul::with('jurusan')->get();
+        $query = Matkul::with('jurusan');
+
+        if ($request->has('search')) {
+            $query->where('matkul', 'like', '%' . $request->search . '%');
+        }
+
+        $data = $query->get();
         return response()->json($data);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,7 +37,7 @@ class ApiMatkul extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jurusan_id' => 'required|exists::jurusan,id',
+            'jurusan_id' => 'required|exists:jurusans,id',
             'matkul' => 'required|string',
         ]);
 
@@ -63,30 +70,34 @@ class ApiMatkul extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'jurusan_id' => 'required|exists::jurusan,id',
-            'matkul' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'jurusan_id' => 'required|exists:jurusans,id',
+        'matkul' => 'required|string',
+    ]);
 
-        $matkul = Matkul::find($id);
+    $matkul = Matkul::find($id);
 
-        if (!$matkul) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
-        }
-
-        $matkul->update($request->all());
-
-        return response()->json('Matkul berhasil diedit', 200);
+    if (!$matkul) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
     }
+
+    $matkul->update($request->all());
+
+    return response()->json(['message' => 'Matkul berhasil diedit', 'data' => $matkul], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $matkul = Matkul::find($id);
-        $matkul->delete();
-        return response()->json('Matkul berhasil dihapus', 200);
+        $matkul = matkul::find($id);
+    if (!$matkul) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+    }
+    $matkul->delete();
+    return response()->json('Matkul berhasil dihapus', 200);
     }
 }

@@ -13,7 +13,13 @@ class MatkulSeeder extends Seeder
      */
     public function run(): void
     {
-        // Matkul::create([
+        Matkul::create([
+            'id' => 1,
+            'jurusan_id' => 1,
+            'matkul' => 'struktur mesin',
+        ]);
+
+        // Matkul::factory()->create([
         //     'id' => 1,
         //     'jurusan_id' => 1,
         //     'matkul' => 'struktur mesin',

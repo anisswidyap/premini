@@ -13,7 +13,7 @@ class ApiMahasiswa extends Controller
      */
     public function index()
     {
-        $data = Mahasiswa::all();
+        $data = Mahasiswa::with(['jurusan'])->get();
         return response()->json($data);
     }
 
@@ -32,6 +32,7 @@ class ApiMahasiswa extends Controller
     {
         $validatedData = $request->validate([
             'nama' => 'required|string',
+            'jurusan_id' => 'required|exists:jurusans,id',
             'jenis_kelamin' => 'required|string',
             'nim' => 'required|unique:mahasiswas,nim',
             'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
@@ -45,6 +46,7 @@ class ApiMahasiswa extends Controller
 
         $mahasiswa = Mahasiswa::create([
             'nama' => $request->nama,
+            'jurusan_id' => $request->jurusan_id,
             'jenis_kelamin' => $request->jenis_kelamin,
             'nim' => $request->nim,
             'foto' => $filePath ?? null,
@@ -78,6 +80,10 @@ class ApiMahasiswa extends Controller
 
     $validatedData = $request->validate([
         'nama' => 'sometimes|required|string',
+<<<<<<< HEAD
+=======
+        'jurusan_id' => 'required|exists:jurusans,id',
+>>>>>>> b5d35cd (ketiga)
         'jenis_kelamin' => 'sometimes|required|string',
         'nim' => 'sometimes|required|unique:mahasiswas,nim,',
         'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',

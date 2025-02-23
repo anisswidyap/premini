@@ -13,10 +13,10 @@ class JurusanSeeder extends Seeder
      */
     public function run(): void
     {
-        // Jurusan::create([
-        //     'id' => 1,
-        //     'fakultas_id' => 1,
-        //     'jurusan' => 'motor',
-        // ]);
+        Jurusan::create([
+            'id' => 1,
+            'fakultas_id' => 1,
+            'jurusan' => 'motor',
+        ]);
     }
 }
