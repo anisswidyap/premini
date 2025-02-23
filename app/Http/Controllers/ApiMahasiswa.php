@@ -80,10 +80,6 @@ class ApiMahasiswa extends Controller
 
     $validatedData = $request->validate([
         'nama' => 'sometimes|required|string',
-<<<<<<< HEAD
-=======
-        'jurusan_id' => 'required|exists:jurusans,id',
->>>>>>> b5d35cd (ketiga)
         'jenis_kelamin' => 'sometimes|required|string',
         'nim' => 'sometimes|required|unique:mahasiswas,nim,',
         'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
