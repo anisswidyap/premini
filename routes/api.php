@@ -32,8 +32,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 
-
-
 Route::apiResource('admin', ApiAdmin::class);
 Route::apiResource('dosen', ApiDosen::class);
 Route::apiResource('matkul', ApiMatkul::class);
@@ -42,5 +40,3 @@ Route::apiResource('jurusan', ApiJurusan::class);
 Route::apiResource('mahasiswa', ApiMahasiswa::class);
 Route::apiResource('mahasiswamatkul', ApiMahasiswaMatkul::class);
 Route::apiResource('dosenmatkul', ApiDosenMatkul::class);
-
-//

@@ -63,21 +63,45 @@ class ApiDosen extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
-                Storage::disk('public')->delete($dosen->foto);
+            // Hapus foto lama jika ada
+            if ($dosen->foto) {
+                $path = storage_path('app/public/' . $dosen->foto);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
             }
+
+            // Simpan foto baru
             $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
             $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
+
+            // Masukkan foto ke dalam array validatedData
             $validatedData['foto'] = $filePath;
+        } else {
+            // Kalau tidak upload foto baru, pakai yang lama
+            $validatedData['foto'] = $dosen->foto;
         }
 
+        // Debugging dulu
+        dd($validatedData);
+
+        // Simpan perubahan
         $dosen->fill($validatedData)->save();
+
+        if ($request->hasFile('foto')) {
+            return response()->json(['message' => 'Foto diterima!'], 200);
+        } else {
+            return response()->json(['message' => 'Foto tidak terkirim!'], 400);
+        }
+
 
         return response()->json([
             'message' => 'Dosen berhasil diperbarui',
             'data' => $dosen->refresh()
         ], 200);
     }
+
+
 
     /**
      * Remove the specified resource from storage.

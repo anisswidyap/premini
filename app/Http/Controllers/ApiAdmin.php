@@ -32,7 +32,7 @@ class ApiAdmin extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'email_verified_at' => now(), // ✅ Otomatis verifikasi email
+            'email_verified_at' => now(),
         ]);
 
         return response()->json([
@@ -52,7 +52,7 @@ class ApiAdmin extends Controller
         'name' => 'sometimes|required|string|max:255',
         'email' => 'sometimes|required|email|unique:users,email,' . $id,
         'password' => 'nullable|min:6',
-        'email_verified_at' => 'nullable|date', // ✅ Bisa diupdate
+        'email_verified_at' => 'nullable|date',
     ]);
 
     $user->name = $request->name ?? $user->name;
