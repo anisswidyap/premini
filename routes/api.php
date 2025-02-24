@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
-Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::apiResource('admin', ApiAdmin::class);
 Route::apiResource('dosen', ApiDosen::class);

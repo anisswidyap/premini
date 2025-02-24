@@ -42,12 +42,13 @@ public function destroy(Request $request): JsonResponse
     $user = $request->user();
 
     if ($user) {
-        // Hapus token yang sedang digunakan
-        $request->user()->currentAccessToken()->delete();
+        // Hapus semua token user
+        $user->tokens()->delete();
     }
 
     return response()->json(['message' => 'Logout berhasil'], 200);
 }
+
 
 
 

@@ -75,32 +75,36 @@ class ApiMahasiswa extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    $mahasiswa = Mahasiswa::findOrFail($id);
+    {
+        $mahasiswa = Mahasiswa::findOrFail($id);
 
-    $validatedData = $request->validate([
-        'nama' => 'sometimes|required|string',
-        'jenis_kelamin' => 'sometimes|required|string',
-        'nim' => 'sometimes|required|unique:mahasiswas,nim,',
-        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-    ]);
+        $validatedData = $request->validate([
+            'nama' => 'sometimes|required|string',
+            'jurusan_id' => 'sometimes|required|exists:jurusans,id',
+            'jenis_kelamin' => 'sometimes|required|string',
+            'nim' => 'sometimes|required|unique:mahasiswas,nim,' . $id,
+            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
 
-    if ($request->hasFile('foto')) {
-        if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
-            Storage::disk('public')->delete($mahasiswa->foto);
+        if ($request->hasFile('foto')) {
+            if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
+                Storage::disk('public')->delete($mahasiswa->foto);
+            }
+            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+            $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
+            $validatedData['foto'] = $filePath;
         }
-        $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-        $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
-        $validatedData['foto'] = $filePath;
+
+        if (!empty($validatedData)) {
+            $mahasiswa->update($validatedData);
+        }
+
+        return response()->json([
+            'message' => 'Mahasiswa berhasil diperbarui',
+            'data' => $mahasiswa->refresh(),
+        ], 200);
     }
 
-    $mahasiswa->fill($validatedData)->save();
-
-    return response()->json([
-        'message' => 'Mahasiswa berhasil diperbarui',
-        'data' => $mahasiswa->refresh()
-    ], 200);
-}
 
     /**
      * Remove the specified resource from storage.
