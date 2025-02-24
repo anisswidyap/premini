@@ -75,35 +75,44 @@ class ApiMahasiswa extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-    {
-        $mahasiswa = Mahasiswa::findOrFail($id);
+{
+    $mahasiswa = Mahasiswa::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'nama' => 'sometimes|required|string',
-            'jurusan_id' => 'sometimes|required|exists:jurusans,id',
-            'jenis_kelamin' => 'sometimes|required|string',
-            'nim' => 'sometimes|required|unique:mahasiswas,nim,' . $id,
-            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-        ]);
+    // Validasi data yang bisa di-update
+    $validatedData = $request->validate([
+        'nama' => 'sometimes|required|string',
+        'jurusan_id' => 'sometimes|required|exists:jurusans,id',
+        'jenis_kelamin' => 'sometimes|required|string',
+        'nim' => 'sometimes|required|unique:mahasiswas,nim,' . $id,
+        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+    ]);
 
-        if ($request->hasFile('foto')) {
-            if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
-                Storage::disk('public')->delete($mahasiswa->foto);
-            }
-            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
-            $validatedData['foto'] = $filePath;
+    // Cek jika ada file foto yang diunggah
+    if ($request->hasFile('foto')) {
+        // Hapus foto lama jika ada dan tersimpan di storage
+        if (!empty($mahasiswa->foto) && Storage::disk('public')->exists($mahasiswa->foto)) {
+            Storage::disk('public')->delete($mahasiswa->foto);
         }
 
-        if (!empty($validatedData)) {
-            $mahasiswa->update($validatedData);
-        }
+        // Simpan foto baru dengan nama unik
+        $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+        $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
-        return response()->json([
-            'message' => 'Mahasiswa berhasil diperbarui',
-            'data' => $mahasiswa->refresh(),
-        ], 200);
+        // Tambahkan path foto ke data yang akan di-update
+        $validatedData['foto'] = $filePath;
     }
+
+    // Update data mahasiswa hanya jika ada perubahan
+    if (!empty($validatedData)) {
+        $mahasiswa->update($validatedData);
+    }
+
+    return response()->json([
+        'message' => 'Mahasiswa berhasil diperbarui',
+        'data' => $mahasiswa->refresh(),
+    ], 200);
+}
+
 
 
     /**
