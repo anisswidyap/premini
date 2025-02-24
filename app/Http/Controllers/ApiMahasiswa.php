@@ -77,8 +77,6 @@ class ApiMahasiswa extends Controller
     public function update(Request $request, $id)
 {
     $mahasiswa = Mahasiswa::findOrFail($id);
-
-    // Validasi data yang bisa di-update
     $validatedData = $request->validate([
         'nama' => 'sometimes|required|string',
         'jurusan_id' => 'sometimes|required|exists:jurusans,id',
@@ -87,22 +85,17 @@ class ApiMahasiswa extends Controller
         'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
     ]);
 
-    // Cek jika ada file foto yang diunggah
     if ($request->hasFile('foto')) {
-        // Hapus foto lama jika ada dan tersimpan di storage
         if (!empty($mahasiswa->foto) && Storage::disk('public')->exists($mahasiswa->foto)) {
             Storage::disk('public')->delete($mahasiswa->foto);
         }
 
-        // Simpan foto baru dengan nama unik
         $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
         $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
-        // Tambahkan path foto ke data yang akan di-update
         $validatedData['foto'] = $filePath;
     }
 
-    // Update data mahasiswa hanya jika ada perubahan
     if (!empty($validatedData)) {
         $mahasiswa->update($validatedData);
     }
