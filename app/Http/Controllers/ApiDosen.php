@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
-
 class ApiDosen extends Controller
 {
     /**
@@ -64,40 +63,38 @@ class ApiDosen extends Controller
             'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        if ($request->hasFile('foto')) {
-            // Debugging: Log path foto lama
-            Log::info("Foto lama:", ["path" => "uploads/" . $dosen->foto]);
-            Log::info("File exists:", ["exists" => Storage::disk("public")->exists("uploads/" . $dosen->foto)]);
+        // Jika ada file foto yang diupload
+    if ($request->hasFile('foto')) {
+        // Cek apakah dosen memiliki foto lama
+        if (!empty($dosen->foto)) {
+            $fotoLama = $dosen->foto; // Ambil path dari database
+            Log::info('Mengecek file: ' . $fotoLama);
 
-
-
-            // Hapus foto lama jika ada
-            if (!empty($dosen->foto) && Storage::disk('public')->exists('uploads/' . $dosen->foto)) {
-                Storage::disk('public')->delete('uploads/' . $dosen->foto);
-                \Log::info('Foto lama berhasil dihapus.');
+            // Hapus foto lama jika ada di storage
+            if (Storage::disk('public')->exists($fotoLama)) {
+                Storage::disk('public')->delete($fotoLama);
+                Log::info('File berhasil dihapus: ' . $fotoLama);
             } else {
-                \Log::info("message");::info('Foto lama tidak ditemukan atau tidak bisa dihapus.');
+                Log::info('File tidak ditemukan: ' . $fotoLama);
             }
-
-            // Upload foto baru
-            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
-
-            $validatedData['foto'] = $filename;
         }
 
+        // Simpan foto baru
+        $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+        $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
-        if (!empty($validatedData)) {
-            $dosen->update($validatedData);
-        }
+        // Simpan path foto ke dalam array data yang akan diupdate
+        $validatedData['foto'] = 'uploads/' . $filename;
+    }
+
+    // Update data dosen
+    $dosen->update($validatedData);
 
         return response()->json([
             'message' => 'Dosen berhasil diperbarui',
             'data' => $dosen->refresh(),
         ], 200);
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -126,4 +123,5 @@ class ApiDosen extends Controller
 
         return response()->json('Dosen berhasil dihapus', 200);
     }
+
 }
