@@ -70,9 +70,18 @@ class ApiFakultas extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        $fakultas = Fakultas::find($id);
-        $fakultas->delete();
-        return response()->json('Fakultas berhasil dihapus', 200);
+{
+    $fakultas = Fakultas::find($id);
+
+    // Cek apakah fakultas masih digunakan di tabel jurusan
+    if ($fakultas->jurusan()->exists()) {
+        return response()->json([
+            'message' => 'Fakultas tidak dapat dihapus karena masih digunakan di tabel jurusan.'
+        ], 400);
     }
+
+    $fakultas->delete();
+    return response()->json('Fakultas berhasil dihapus', 200);
+}
+
 }

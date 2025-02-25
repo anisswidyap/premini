@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -24,18 +23,11 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): JsonResponse
 {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
+    $request->authenticate();
 
-    $user = User::where('email', $request->email)->first();
+    $user = Auth::user();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Login gagal!'], 401);
-    }
-
-    // Gunakan createToken hanya jika user valid
+    // Buat token untuk user yang login
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([

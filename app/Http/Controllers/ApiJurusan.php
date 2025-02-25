@@ -95,12 +95,22 @@ class ApiJurusan extends Controller
      */
     public function destroy(string $id)
 {
-    $jurusan = jurusan::find($id);
+    $jurusan = Jurusan::find($id);
+
     if (!$jurusan) {
         return response()->json(['message' => 'Data tidak ditemukan'], 404);
     }
+
+    // Cek apakah jurusan masih digunakan di tabel lain
+    if ($jurusan->matkul()->exists() || $jurusan->dosen()->exists() || $jurusan->mahasiswa()->exists()) {
+        return response()->json([
+            'message' => 'Jurusan tidak dapat dihapus karena masih digunakan di tabel lain.'
+        ], 400);
+    }
+
     $jurusan->delete();
-    return response()->json('jurusan berhasil dihapus', 200);
+    return response()->json('Jurusan berhasil dihapus', 200);
 }
+
 
 }

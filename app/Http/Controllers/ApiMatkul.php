@@ -93,11 +93,21 @@ class ApiMatkul extends Controller
      */
     public function destroy(string $id)
     {
-        $matkul = matkul::find($id);
-    if (!$matkul) {
-        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        $matkul = Matkul::find($id);
+
+        if (!$matkul) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Cek apakah matkul masih digunakan di tabel lain
+        if ($matkul->dosenMatkul()->exists() || $matkul->mahasiswaMatkul()->exists()) {
+            return response()->json([
+                'message' => 'Matkul tidak dapat dihapus karena masih digunakan di tabel lain.'
+            ], 400);
+        }
+
+        $matkul->delete();
+        return response()->json('Matkul berhasil dihapus', 200);
     }
-    $matkul->delete();
-    return response()->json('Matkul berhasil dihapus', 200);
-    }
+
 }

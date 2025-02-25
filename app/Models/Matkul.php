@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Matkul extends Model
@@ -21,14 +20,14 @@ class Matkul extends Model
         'matkul'
     ];
 
-    public function DosenMatkul(): belongsToMany
+    public function DosenMatkul(): hasMany
     {
-        return $this->belongsToMany(DosenMatkul::class);
+        return $this->hasMany(DosenMatkul::class);
     }
 
-    public function MahasiswaMatkul(): BelongsToMany
+    public function MahasiswaMatkul(): hasMany
     {
-        return $this->belongsToMany(Matkul::class);
+        return $this->hasMany(Matkul::class);
     }
 
     public function Jurusan(): BelongsTo
