@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class ApiDosen extends Controller
 {
@@ -63,15 +65,27 @@ class ApiDosen extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if (!empty($dosen->foto) && Storage::disk('public')->exists($dosen->foto)) {
-                Storage::disk('public')->delete('upload/'. $dosen->foto);
+            // Debugging: Log path foto lama
+            Log::info("Foto lama:", ["path" => "uploads/" . $dosen->foto]);
+            Log::info("File exists:", ["exists" => Storage::disk("public")->exists("uploads/" . $dosen->foto)]);
+
+
+
+            // Hapus foto lama jika ada
+            if (!empty($dosen->foto) && Storage::disk('public')->exists('uploads/' . $dosen->foto)) {
+                Storage::disk('public')->delete('uploads/' . $dosen->foto);
+                \Log::info('Foto lama berhasil dihapus.');
+            } else {
+                \Log::info("message");::info('Foto lama tidak ditemukan atau tidak bisa dihapus.');
             }
 
+            // Upload foto baru
             $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
             $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
             $validatedData['foto'] = $filename;
         }
+
 
         if (!empty($validatedData)) {
             $dosen->update($validatedData);
@@ -112,5 +126,4 @@ class ApiDosen extends Controller
 
         return response()->json('Dosen berhasil dihapus', 200);
     }
-
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiMahasiswa;
 use App\Http\Controllers\ApiMahasiswaMatkul;
 use App\Http\Controllers\ApiMatkul;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\LandingPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('/landingpage', [LandingPageController::class, 'index']);
 
 Route::apiResource('admin', ApiAdmin::class);
 Route::apiResource('dosen', ApiDosen::class);
