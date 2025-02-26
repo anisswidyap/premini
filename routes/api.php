@@ -41,3 +41,7 @@ Route::apiResource('jurusan', ApiJurusan::class);
 Route::apiResource('mahasiswa', ApiMahasiswa::class);
 Route::apiResource('mahasiswamatkul', ApiMahasiswaMatkul::class);
 Route::apiResource('dosenmatkul', ApiDosenMatkul::class);
+
+
+
+//anis
