@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\JurusanResource;
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ class ApiJurusan extends Controller
         }
 
         $data = $query->get();
-        return response()->json($data);
+        return JurusanResource::collection($data);
     }
 
     /**
@@ -52,11 +53,11 @@ class ApiJurusan extends Controller
     {
         $jurusan = Jurusan::with('fakultas')->find($id);
 
-    if (!$jurusan) {
-        return response()->json(['message' => 'data tidak ditemukan'], 404);
-    }
+        if (!$jurusan) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
 
-          return response()->json($jurusan);
+        return new JurusanResource($jurusan);
     }
 
     /**

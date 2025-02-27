@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DosenMatkulResource;
 use App\Models\DosenMatkul;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class ApiDosenMatkul extends Controller
     public function index()
     {
         $data = DosenMatkul::with(['dosen', 'matkul'])->get();
-        return response()->json($data);
+        return DosenMatkulResource::collection($data);
     }
 
     /**
@@ -35,13 +36,13 @@ class ApiDosenMatkul extends Controller
      */
     public function show($id)
     {
-        $dosenMatkul = DosenMatkul::with(['dosen','matkul'])->find($id);
+        $dosenMatkul = DosenMatkul::with(['dosen', 'matkul'])->find($id);
 
         if (!$dosenMatkul) {
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        return response()->json($dosenMatkul);
+        return new DosenMatkulResource($dosenMatkul);
     }
 
     /**

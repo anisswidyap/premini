@@ -5,23 +5,22 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MahasiswaResource extends JsonResource
+class DosenResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request)
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'nama' => $this->nama,
+            'jurusan' => $this->jurusan->jurusan ?? 'Tidak Ada',
             'jenis_kelamin' => $this->jenis_kelamin,
-            'nim' => $this->nim,
+            'nidn' => $this->nidn,
             'foto' => $this->foto,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }

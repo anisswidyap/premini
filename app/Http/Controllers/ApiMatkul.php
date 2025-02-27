@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MatkulResource;
 use App\Models\Matkul;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ class ApiMatkul extends Controller
         }
 
         $data = $query->get();
-        return response()->json($data);
+        return MatkulResource::collection($data);
     }
 
 
@@ -52,10 +53,11 @@ class ApiMatkul extends Controller
     {
         $matkul = Matkul::with('jurusan')->find($id);
 
-    if (!$matkul) {
-        return response()->json(['message' => 'Data tidak ditemukan'], 404);
-    }
-          return response()->json($matkul);
+        if (!$matkul) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        return new MatkulResource($matkul);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DosenResource;
 use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,7 @@ class ApiDosen extends Controller
     public function index()
     {
         $data = Dosen::with(['jurusan'])->get();
-        return response()->json($data);
+        return DosenResource::collection(Dosen::with('jurusan')->get());
     }
 
     /**
@@ -94,6 +95,17 @@ class ApiDosen extends Controller
             'message' => 'Dosen berhasil diperbarui',
             'data' => $dosen->refresh(),
         ], 200);
+    }
+
+    public function show(string $id)
+    {
+        $dosen = Dosen::with('jurusan')->find($id);
+
+        if (!$dosen) {
+            return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
+        }
+
+        return new DosenResource($dosen);
     }
 
     /**

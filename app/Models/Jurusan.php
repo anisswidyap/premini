@@ -20,6 +20,8 @@ class Jurusan extends Model
         'fakultas_id'
     ];
 
+    protected $table = 'jurusans';
+
     public function fakultas(): BelongsTo
     {
         return $this->belongsTo(Fakultas::class);

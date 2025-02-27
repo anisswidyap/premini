@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MahasiwaResource;
 use App\Models\Mahasiswa;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class ApiMahasiswa extends Controller
     public function index()
     {
         $data = Mahasiswa::with(['jurusan'])->get();
-        return response()->json($data);
+        return MahasiwaResource::collection(Mahasiswa::with('jurusan')->get());
     }
 
     /**
@@ -62,7 +63,13 @@ class ApiMahasiswa extends Controller
      */
     public function show(string $id)
     {
-        //
+        $mahasiswa = Mahasiswa::with('jurusan')->find($id);
+
+        if (!$mahasiswa) {
+            return response()->json(['error' => 'Mahasiswa tidak ditemukan'], 404);
+        }
+
+        return new MahasiwaResource($mahasiswa);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MahasiswaMatkulResource;
 use App\Models\MahasiswaMatkul;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class ApiMahasiswaMatkul extends Controller
     public function index()
     {
         $data = MahasiswaMatkul::with(['mahasiswa', 'matkul'])->get();
-        return response()->json($data);
+        return MahasiswaMatkulResource::collection($data);
     }
 
     /**
@@ -33,7 +34,7 @@ class ApiMahasiswaMatkul extends Controller
     /**
      * Menampilkan data tertentu berdasarkan ID.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $mahasiswaMatkul = MahasiswaMatkul::with(['mahasiswa', 'matkul'])->find($id);
 
@@ -41,7 +42,7 @@ class ApiMahasiswaMatkul extends Controller
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        return response()->json($mahasiswaMatkul);
+        return new MahasiswaMatkulResource($mahasiswaMatkul);
     }
 
     /**
