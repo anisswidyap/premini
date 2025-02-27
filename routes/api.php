@@ -18,11 +18,11 @@ use Illuminate\Support\Facades\Route;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| File ini berisi semua rute API untuk aplikasi. Semua rute di sini akan
+| diakses melalui prefix "api" secara otomatis.
 |
 */
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -32,7 +32,6 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('lo
 Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::get('/landingpage', [LandingPageController::class, 'index']);
-
 Route::apiResource('admin', ApiAdmin::class);
 Route::apiResource('dosen', ApiDosen::class);
 Route::apiResource('matkul', ApiMatkul::class);
@@ -41,8 +40,3 @@ Route::apiResource('jurusan', ApiJurusan::class);
 Route::apiResource('mahasiswa', ApiMahasiswa::class);
 Route::apiResource('mahasiswamatkul', ApiMahasiswaMatkul::class);
 Route::apiResource('dosenmatkul', ApiDosenMatkul::class);
-
-
-
-//anis
-//wodya

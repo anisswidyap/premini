@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ApiMahasiswa extends Controller
 {
@@ -87,19 +89,25 @@ class ApiMahasiswa extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if (!empty($mahasiswa->foto) && Storage::disk('public')->exists($mahasiswa->foto)) {
-                Storage::disk('public')->delete('uploads/' . $mahasiswa->foto);
+            if (!empty($mahasiswa->foto)) {
+                $fotoLama = $mahasiswa->foto;
+                Log::info('Mengecek file: ' . $fotoLama);
+
+                if (Storage::disk('public')->exists($fotoLama)) {
+                    Storage::disk('publick')->delete($fotoLama);
+                    Log::info('File berhasil di hapus: ' . $fotoLama);
+                } else {
+                    Log::info('file tidak di temukan: ' . $fotoLama);
+                }
             }
 
             $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
             $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
-            $validatedData['foto'] = $filename;
+            $validatedData['foto'] = 'uploads/' . $filename;
         }
 
-        if (!empty($validatedData)) {
-            $mahasiswa->update($validatedData);
-        }
+        $mahasiswa->update($validatedData);
 
         return response()->json([
             'message' => 'Mahasiswa berhasil diperbarui',

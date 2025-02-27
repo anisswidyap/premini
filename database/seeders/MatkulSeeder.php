@@ -16,13 +16,8 @@ class MatkulSeeder extends Seeder
         Matkul::create([
             'id' => 1,
             'jurusan_id' => 1,
-            'matkul' => 'struktur mesin',
+            'matkul' => 'Mekanika Teknik',
         ]);
 
-        // Matkul::factory()->create([
-        //     'id' => 1,
-        //     'jurusan_id' => 1,
-        //     'matkul' => 'struktur mesin',
-        // ]);
     }
 }

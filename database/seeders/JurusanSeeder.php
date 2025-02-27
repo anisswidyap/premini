@@ -16,7 +16,7 @@ class JurusanSeeder extends Seeder
         Jurusan::create([
             'id' => 1,
             'fakultas_id' => 1,
-            'jurusan' => 'motor',
+            'jurusan' => 'mesin',
         ]);
     }
 }

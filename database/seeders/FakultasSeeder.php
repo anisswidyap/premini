@@ -15,7 +15,7 @@ class FakultasSeeder extends Seeder
     {
         Fakultas::create([
             'id' => 1,
-            'nama_fakultas' => 'teknik',
+            'nama_fakultas' => 'Teknik',
         ]);
 
         // Fakultas::factory()->create([

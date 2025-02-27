@@ -14,8 +14,8 @@ class LandingPageController extends Controller
     public function index() {
         $data = [
             'fakultas' => Fakultas::count(),
-            'jurusan' => Jurusan::count(),
-            'matkul' => Matkul::count(),
+            // 'jurusan' => Jurusan::count(),
+            // 'matkul' => Matkul::count(),
             'dosen' => Dosen::count(),
             'mahasiswa' => Mahasiswa::count(),
         ];

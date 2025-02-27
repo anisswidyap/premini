@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jurusan;
-use App\Models\Matkul;
 use Illuminate\Http\Request;
 
 class ApiJurusan extends Controller
@@ -22,7 +21,6 @@ class ApiJurusan extends Controller
         $data = $query->get();
         return response()->json($data);
     }
-
 
     /**
      * Show the form for creating a new resource.
