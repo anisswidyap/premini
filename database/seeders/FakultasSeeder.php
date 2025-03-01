@@ -18,9 +18,5 @@ class FakultasSeeder extends Seeder
             'nama_fakultas' => 'Teknik',
         ]);
 
-        // Fakultas::factory()->create([
-        //     'id' => 1,
-        //     'nama_fakultas' => 'teknik',
-        // ]);
     }
 }
