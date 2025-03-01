@@ -11,9 +11,17 @@ class ApiDosenMatkul extends Controller
     /**
      * Menampilkan semua data DosenMatkul.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = DosenMatkul::with(['dosen', 'matkul'])->get();
+        $query = DosenMatkul::with('dosen', 'matkul');
+
+        if ($request->has('search')) {
+            $query->whereHas('dosen', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $data = $query->get();
         return DosenMatkulResource::collection($data);
     }
 

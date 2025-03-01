@@ -13,10 +13,16 @@ class ApiDosen extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Dosen::with(['jurusan'])->get();
-        return DosenResource::collection(Dosen::with('jurusan')->get());
+        $query = Dosen::with('jurusan');
+
+        if ($request->has('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        $data = $query->get();
+        return DosenResource::collection($data);
     }
 
     /**

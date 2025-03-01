@@ -11,9 +11,17 @@ class ApiMahasiswaMatkul extends Controller
     /**
      * Menampilkan semua data.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = MahasiswaMatkul::with(['mahasiswa', 'matkul'])->get();
+        $query = MahasiswaMatkul::with('mahasiswa', 'matkul');
+
+        if ($request->has('search')) {
+            $query->whereHas('mahasiswa', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $data = $query->get();
         return MahasiswaMatkulResource::collection($data);
     }
 

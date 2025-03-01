@@ -11,10 +11,17 @@ class ApiAdmin extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $query = User::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $users = $query->get();
         return response()->json($users);
+
     }
 
     /**

@@ -14,10 +14,16 @@ class ApiMahasiswa extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Mahasiswa::with(['jurusan'])->get();
-        return MahasiwaResource::collection(Mahasiswa::with('jurusan')->get());
+        $query = Mahasiswa::with('jurusan');
+
+        if ($request->has('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        $data = $query->get();
+        return MahasiwaResource::collection($data);
     }
 
     /**
