@@ -17,10 +17,10 @@ class DosenResource extends JsonResource
         return [
             'id' => $this->id,
             'nama' => $this->nama,
-            'jurusan' => $this->jurusan->jurusan ?? 'Tidak Ada',
+            'jurusan_id' => $this->jurusan_id,
             'jenis_kelamin' => $this->jenis_kelamin,
             'nidn' => $this->nidn,
-            'foto' => $this->foto,
+            'foto' => $this->foto ? asset('storage/' . $this->foto) : null,
         ];
     }
 }

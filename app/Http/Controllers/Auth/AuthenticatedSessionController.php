@@ -23,8 +23,6 @@ class AuthenticatedSessionController extends Controller
     $request->authenticate();
 
     $user = Auth::user();
-
-    // Buat token untuk user yang login
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([
