@@ -70,14 +70,13 @@ class ApiDosen extends Controller
             'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        // Jika ada file foto yang diupload
+
     if ($request->hasFile('foto')) {
-        // Cek apakah dosen memiliki foto lama
+
         if (!empty($dosen->foto)) {
-            $fotoLama = $dosen->foto; // Ambil path dari database
+            $fotoLama = $dosen->foto;
             Log::info('Mengecek file: ' . $fotoLama);
 
-            // Hapus foto lama jika ada di storage
             if (Storage::disk('public')->exists($fotoLama)) {
                 Storage::disk('public')->delete($fotoLama);
                 Log::info('File berhasil dihapus: ' . $fotoLama);
@@ -86,15 +85,12 @@ class ApiDosen extends Controller
             }
         }
 
-        // Simpan foto baru
         $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
         $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
 
-        // Simpan path foto ke dalam array data yang akan diupdate
         $validatedData['foto'] = 'uploads/' . $filename;
     }
 
-    // Update data dosen
     $dosen->update($validatedData);
 
         return response()->json([
@@ -125,14 +121,12 @@ class ApiDosen extends Controller
             return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
         }
 
-        // Cek apakah dosen masih memiliki mata kuliah di tabel dosen_matkul
         if ($dosen->dosenMatkul()->exists()) {
             return response()->json([
                 'error' => 'Dosen tidak dapat dihapus karena masih di miliki dosenmatkul.'
             ], 400);
         }
 
-        // Hapus foto jika ada
         if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
             Storage::disk('public')->delete($dosen->foto);
         }

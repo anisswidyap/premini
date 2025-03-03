@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Dosen;
 use App\Models\Fakultas;
 use App\Models\Jurusan;
-use App\Models\Mahasiswa;
-use App\Models\Matkul;
-use Illuminate\Http\Request;
+use App\Models\Mahasiswa;   
 
 class LandingPageController extends Controller
 {
