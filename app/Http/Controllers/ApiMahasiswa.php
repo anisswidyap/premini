@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MahasiwaResource;
+use App\Http\Resources\MahasiswaResource;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +22,7 @@ class ApiMahasiswa extends Controller
         }
 
         $data = $query->get();
-        return MahasiwaResource::collection($data);
+        return MahasiswaResource::collection($data);
     }
 
     /**
@@ -60,7 +60,11 @@ class ApiMahasiswa extends Controller
             'foto' => $filename ?? null,
         ]);
 
-        return response()->json('Mahasiswa berhasil ditambahkan', 200);
+        return response()->json([
+            'message' => 'Mahasiswa berhasil ditambahkan',
+            'data' => new MahasiswaResource($mahasiswa),
+            'image_url' => $filename ? asset('storage/' . $filename) : null
+        ], 200);
     }
 
     /**
@@ -74,7 +78,7 @@ class ApiMahasiswa extends Controller
             return response()->json(['error' => 'Mahasiswa tidak ditemukan'], 404);
         }
 
-        return new MahasiwaResource($mahasiswa);
+        return response()->json(new MahasiswaResource($mahasiswa), 200);
     }
 
     /**
@@ -123,7 +127,8 @@ class ApiMahasiswa extends Controller
 
         return response()->json([
             'message' => 'Mahasiswa berhasil diperbarui',
-            'data' => $mahasiswa->refresh(),
+            'data' => new MahasiswaResource($mahasiswa->refresh()),
+            'image_url' => $filePath ? asset('storage/' . $filePath) : null
         ], 200);
     }
 
@@ -138,14 +143,14 @@ class ApiMahasiswa extends Controller
         return response()->json(['error' => 'Mahasiswa tidak ditemukan'], 404);
     }
 
-    // Cek apakah mahasiswa masih memiliki mata kuliah
     if ($mahasiswa->mahasiswaMatkul()->exists()) {
         return response()->json([
             'error' => 'Mahasiswa tidak dapat dihapus karena masih dimiliki mahasiswamatkul.'
         ], 400);
     }
 
-    // Hapus foto jika ada
+    $deletedMahasiswa = new MAhasiswaResource($mahasiswa);
+
     if ($mahasiswa->foto && Storage::disk('public')->exists($mahasiswa->foto)) {
         Storage::disk('public')->delete($mahasiswa->foto);
     }

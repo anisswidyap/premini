@@ -38,8 +38,6 @@ class ApiDosen extends Controller
         'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
     ]);
 
-    $filePath = null;
-
     if ($request->hasFile('foto')) {
         $file = $request->file('foto');
         $filename = time() . '_' . $file->getClientOriginalName();
@@ -51,13 +49,13 @@ class ApiDosen extends Controller
         'jurusan_id' => $request->jurusan_id,
         'jenis_kelamin' => $request->jenis_kelamin,
         'nidn' => $request->nidn,
-        'foto' => $filePath, // Simpan path di database
+        'foto' => $filename ?? null,
     ]);
 
     return response()->json([
         'message' => 'Dosen berhasil ditambahkan',
         'data' => new DosenResource($dosen),
-        'image_url' => $filePath ? asset('storage/' . $filePath) : null
+        'image_url' => $filename ? asset('storage/' . $filename) : null
     ], 200);
 }
     /**
@@ -105,6 +103,7 @@ class ApiDosen extends Controller
         ], 200);
     }
 
+    //
     public function show(string $id)
 {
     $dosen = Dosen::with('jurusan')->find($id);
