@@ -17,7 +17,7 @@ class DosenResource extends JsonResource
         return [
             'id' => $this->id,
             'nama' => $this->nama,
-            'jurusan_id' => $this->jurusan_id,
+            'jurusan' => $this->jurusan->jurusan ?? 'Tidak Ada',
             'jenis_kelamin' => $this->jenis_kelamin,
             'nidn' => $this->nidn,
             'foto' => $this->foto ? asset('storage/' . $this->foto) : null,
