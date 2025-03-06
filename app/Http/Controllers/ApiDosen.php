@@ -6,7 +6,6 @@ use App\Http\Resources\DosenResource;
 use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 
 class ApiDosen extends Controller
 {
@@ -44,7 +43,7 @@ class ApiDosen extends Controller
             'jurusan_id' => $request->jurusan_id,
             'jenis_kelamin' => $request->jenis_kelamin,
             'nidn' => $request->nidn,
-            'foto' => $filePath, // Simpan path lengkap
+            'foto' => $filePath,
         ]);
 
         return response()->json([

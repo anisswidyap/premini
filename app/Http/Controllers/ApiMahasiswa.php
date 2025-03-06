@@ -67,8 +67,10 @@ class ApiMahasiswa extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if (!empty($mahasiswa->foto) && Storage::disk('public')->exists($mahasiswa->foto)) {
-                Storage::disk('public')->delete($mahasiswa->foto);
+            if (!empty($dosen->foto)) {
+                if (Storage::disk('public')->exists($mahasiswa->foto)) {
+                    Storage::disk('public')->delete($mahasiswa->foto);
+                }
             }
 
             $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
