@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Log;
 
 class ApiDosen extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = Dosen::with('jurusan');
@@ -25,42 +22,38 @@ class ApiDosen extends Controller
         return DosenResource::collection($data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
-{
-    $validatedData = $request->validate([
-        'nama' => 'required|string',
-        'jurusan_id' => 'required|exists:jurusans,id',
-        'jenis_kelamin' => 'required|string',
-        'nidn' => 'required|unique:dosens,nidn',
-        'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-    ]);
+    {
+        $validatedData = $request->validate([
+            'nama' => 'required|string',
+            'jurusan_id' => 'required|exists:jurusans,id',
+            'jenis_kelamin' => 'required|string',
+            'nidn' => 'required|unique:dosens,nidn',
+            'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
 
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('uploads', $filename, 'public');
+        $filePath = null;
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads', $filename, 'public');
+        }
+
+        $dosen = Dosen::create([
+            'nama' => $request->nama,
+            'jurusan_id' => $request->jurusan_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'nidn' => $request->nidn,
+            'foto' => $filePath, // Simpan path lengkap
+        ]);
+
+        return response()->json([
+            'message' => 'Dosen berhasil ditambahkan',
+            'data' => new DosenResource($dosen),
+            'image_url' => $filePath ? asset('storage/' . $filePath) : null
+        ], 200);
     }
 
-    $dosen = Dosen::create([
-        'nama' => $request->nama,
-        'jurusan_id' => $request->jurusan_id,
-        'jenis_kelamin' => $request->jenis_kelamin,
-        'nidn' => $request->nidn,
-        'foto' => $filename ?? null,
-    ]);
-
-    return response()->json([
-        'message' => 'Dosen berhasil ditambahkan',
-        'data' => new DosenResource($dosen),
-        'image_url' => $filename ? asset('storage/' . $filename) : null
-    ], 200);
-}
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $dosen = Dosen::findOrFail($id);
@@ -73,52 +66,38 @@ class ApiDosen extends Controller
             'foto' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-
-    if ($request->hasFile('foto')) {
-
-        if (!empty($dosen->foto)) {
-            $fotoLama = $dosen->foto;
-            Log::info('Mengecek file: ' . $fotoLama);
-
-            if (Storage::disk('public')->exists($fotoLama)) {
-                Storage::disk('public')->delete($fotoLama);
-                Log::info('File berhasil dihapus: ' . $fotoLama);
-            } else {
-                Log::info('File tidak ditemukan: ' . $fotoLama);
+        if ($request->hasFile('foto')) {
+            if (!empty($dosen->foto)) {
+                if (Storage::disk('public')->exists($dosen->foto)) {
+                    Storage::disk('public')->delete($dosen->foto);
+                }
             }
+
+            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+            $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
+            $validatedData['foto'] = $filePath;
         }
 
-        $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-        $filePath = $request->file('foto')->storeAs('uploads', $filename, 'public');
-
-        $validatedData['foto'] = 'uploads/' . $filename;
-    }
-
-    $dosen->update($validatedData);
+        $dosen->update($validatedData);
 
         return response()->json([
             'message' => 'Dosen berhasil diperbarui',
             'data' => new DosenResource($dosen->refresh()),
-            'image_url' => $filePath ? asset('storage/' . $filePath) : null
+            'image_url' => $dosen->foto ? asset('storage/' . $dosen->foto) : null
         ], 200);
     }
 
-    //
     public function show(string $id)
-{
-    $dosen = Dosen::with('jurusan')->find($id);
+    {
+        $dosen = Dosen::with('jurusan')->find($id);
 
-    if (!$dosen) {
-        return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
+        if (!$dosen) {
+            return response()->json(['error' => 'Dosen tidak ditemukan'], 404);
+        }
+
+        return response()->json(new DosenResource($dosen), 200);
     }
 
-    return response()->json(new DosenResource($dosen), 200);
-}
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $dosen = Dosen::find($id);
@@ -129,11 +108,9 @@ class ApiDosen extends Controller
 
         if ($dosen->dosenMatkul()->exists()) {
             return response()->json([
-                'error' => 'Dosen tidak dapat dihapus karena masih di miliki dosenmatkul.'
+                'error' => 'Dosen tidak dapat dihapus karena masih memiliki relasi.'
             ], 400);
         }
-
-        $deletedDosen = new DosenResource($dosen);
 
         if ($dosen->foto && Storage::disk('public')->exists($dosen->foto)) {
             Storage::disk('public')->delete($dosen->foto);
@@ -141,7 +118,6 @@ class ApiDosen extends Controller
 
         $dosen->delete();
 
-        return response()->json('Dosen berhasil dihapus', 200);
+        return response()->json(['message' => 'Dosen berhasil dihapus'], 200);
     }
-
 }
