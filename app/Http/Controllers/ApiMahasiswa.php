@@ -6,7 +6,6 @@ use App\Http\Resources\MahasiswaResource;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 
 class ApiMahasiswa extends Controller
 {
@@ -40,10 +39,10 @@ class ApiMahasiswa extends Controller
         }
 
         $mahasiswa = Mahasiswa::create([
-            'nama' => $request->nama,
-            'jurusan_id' => $request->jurusan_id,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'nim' => $request->nim,
+            'nama' => $validatedData['nama'],
+            'jurusan_id' => $validatedData['jurusan_id'],
+            'jenis_kelamin' => $validatedData['jenis_kelamin'],
+            'nim' => $validatedData['nim'],
             'foto' => $filePath,
         ]);
 
@@ -67,7 +66,8 @@ class ApiMahasiswa extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if (!empty($dosen->foto)) {
+            // Pastikan variabel yang dicek adalah mahasiswa, bukan dosen
+            if (!empty($mahasiswa->foto)) {
                 if (Storage::disk('public')->exists($mahasiswa->foto)) {
                     Storage::disk('public')->delete($mahasiswa->foto);
                 }

@@ -20,7 +20,7 @@ class MahasiswaResource extends JsonResource
             'jurusan' => $this->jurusan->jurusan ?? 'Tidak Ada',
             'jenis_kelamin' => $this->jenis_kelamin,
             'nim' => $this->nim,
-            'foto' => $this->foto,
+            'foto' => $this->foto ? asset('storage/' . $this->foto) : null,
         ];
     }
 }
